@@ -2,6 +2,7 @@ package com.cedricmartens.flocks.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
@@ -22,13 +23,26 @@ public class PlayScreen extends StageScreen{
 
     private List<Agent> agents;
     private ShapeRenderer shapeRenderer;
-    private GestureDetector gestureDetector;
+    private GestureDetector detector;
+    private PlayScreenGesture behavior;
 
     public PlayScreen()
     {
         shapeRenderer = new ShapeRenderer();
         shapeRenderer.setAutoShapeType(true);
         agents = new ArrayList<Agent>();
+
+        setMultiplexer();
+    }
+
+    private void setMultiplexer()
+    {
+        behavior = new PlayScreenGesture(this);
+        detector = new GestureDetector(behavior);
+        InputMultiplexer inputMultiplexer = new InputMultiplexer();
+        inputMultiplexer.addProcessor(getStage());
+        inputMultiplexer.addProcessor(detector);
+        Gdx.input.setInputProcessor(inputMultiplexer);
     }
 
     @Override
@@ -45,12 +59,12 @@ public class PlayScreen extends StageScreen{
 
         if(Gdx.input.isButtonPressed(Input.Buttons.LEFT))
         {
-            agents.add(new Circloid(new Vector2(target.x, target.y)));
+         //   agents.add(new Circloid(new Vector2(target.x, target.y)));
         }
 
         if(Gdx.input.isButtonPressed(Input.Buttons.RIGHT))
         {
-            agents.add(new Triboid(new Vector2(target.x, target.y)));
+            //agents.add(new Triboid(new Vector2(target.x, target.y)));
         }
 
         for(int i = 0; i < agents.size(); i++)
@@ -96,6 +110,11 @@ public class PlayScreen extends StageScreen{
     @Override
     public void dispose() {
 
+    }
+
+    @Override
+    public void show() {
+        setMultiplexer();
     }
 
     public List<Agent> getAgents() {

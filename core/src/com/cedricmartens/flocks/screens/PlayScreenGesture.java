@@ -1,10 +1,17 @@
 package com.cedricmartens.flocks.screens;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.viewport.Viewport;
+import com.cedricmartens.flocks.AgentSpawner;
 import com.cedricmartens.flocks.agents.Agent;
+import com.cedricmartens.flocks.agents.Circloid;
+import com.cedricmartens.flocks.agents.Triboid;
 
 import java.util.List;
 
@@ -15,15 +22,17 @@ import java.util.List;
 public class PlayScreenGesture implements GestureDetector.GestureListener {
 
     private PlayScreen playScreen;
-    private List<Agent> agents;
     private OrthographicCamera camera;
     private Stage stage;
+    private AgentSpawner spawner;
+    private Class<? extends Agent> currentSpawn;
 
     public PlayScreenGesture(PlayScreen playScreen) {
         this.playScreen = playScreen;
-        this.agents = playScreen.getAgents();
+        this.spawner = new AgentSpawner(playScreen.getAgents());
         this.camera = playScreen.getCamera();
         this.stage = playScreen.getStage();
+        currentSpawn = Circloid.class;
     }
 
     @Override
@@ -34,7 +43,17 @@ public class PlayScreenGesture implements GestureDetector.GestureListener {
 
     @Override
     public boolean tap(float x, float y, int count, int button) {
-        return false;
+
+        Vector2 wc = toWorldCoords(x, y);
+
+        if(button == Input.Buttons.LEFT)
+            currentSpawn = Circloid.class;
+
+        if(button == Input.Buttons.RIGHT)
+            currentSpawn = Triboid.class;
+
+        spawner.spawnAgent(wc.x, wc.y, currentSpawn);
+        return true;
     }
 
     @Override
@@ -70,5 +89,14 @@ public class PlayScreenGesture implements GestureDetector.GestureListener {
     @Override
     public void pinchStop() {
 
+    }
+
+    private Vector2 toWorldCoords(float x, float y)
+    {
+        Viewport viewport = stage.getViewport();
+        Vector3 unp = camera.unproject(new Vector3(x, y, 0),
+                viewport.getScreenX(), viewport.getScreenY(),
+                viewport.getScreenWidth(), viewport.getScreenHeight());
+        return new Vector2(unp.x, unp.y);
     }
 }

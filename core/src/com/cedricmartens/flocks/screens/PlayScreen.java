@@ -3,6 +3,7 @@ package com.cedricmartens.flocks.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
@@ -86,6 +87,7 @@ public class PlayScreen extends StageScreen{
         for(int i = 0; i < agents.size(); i++)
             agents.get(i).render(shapeRenderer);
 
+        shapeRenderer.setColor(Color.BLACK);
         shapeRenderer.circle( 0,  0, 25);
         shapeRenderer.end();
 

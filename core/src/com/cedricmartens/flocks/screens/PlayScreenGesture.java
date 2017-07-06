@@ -1,7 +1,5 @@
 package com.cedricmartens.flocks.screens;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
@@ -11,9 +9,10 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.cedricmartens.flocks.AgentSpawner;
 import com.cedricmartens.flocks.agents.Agent;
 import com.cedricmartens.flocks.agents.Circloid;
+import com.cedricmartens.flocks.agents.Squarel;
 import com.cedricmartens.flocks.agents.Triboid;
 
-import java.util.List;
+import java.util.Random;
 
 /**
  * Created by martens on 7/6/17.
@@ -46,11 +45,24 @@ public class PlayScreenGesture implements GestureDetector.GestureListener {
 
         Vector2 wc = toWorldCoords(x, y);
 
-        if(button == Input.Buttons.LEFT)
-            currentSpawn = Circloid.class;
+        Random random = new Random();
 
-        if(button == Input.Buttons.RIGHT)
-            currentSpawn = Triboid.class;
+        int index = random.nextInt(3);
+
+        switch (index)
+        {
+            case 0 :
+                currentSpawn = Circloid.class;
+                break;
+            case 1 :
+                currentSpawn = Triboid.class;
+                break;
+            case 2 :
+                currentSpawn = Squarel.class;
+                break;
+            case 3 :
+                throw new RuntimeException();
+        }
 
         spawner.spawnAgent(wc.x, wc.y, currentSpawn);
         return true;

@@ -34,7 +34,8 @@ public class Triboid extends Agent{
         shapeRenderer.line(vecPerp1.x, vecPerp1.y, vDir.x, vDir.y);
         shapeRenderer.line(vecPerp2.x, vecPerp2.y, vDir.x, vDir.y);
 
-        renderSight(shapeRenderer);
+        if(drawSight)
+            renderSight(shapeRenderer);
     }
 
     public Triboid(Vector2 position) {

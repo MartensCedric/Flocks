@@ -25,7 +25,7 @@ public abstract class Agent extends Entity
     protected float sightDistance;
     protected float sightDegrees;
 
-    protected boolean drawSight = true;
+    protected boolean drawSight = false;
 
     public Agent(Vector2 position) {
         setPosition(position);
@@ -154,22 +154,15 @@ public abstract class Agent extends Entity
     {
         Vector2 separateForce = separate(agents);
         Vector2 seekForce = seek(target);
+        Vector2 obstForce = separate(obstacles);
 
         separateForce.scl(2);
         seekForce.scl(1);
+        obstForce.scl(3);
 
         applyForce(separateForce);
         applyForce(seekForce);
-
-        Vector2 fleeForce = new Vector2();
-        for(int i = 0; i < obstacles.size(); i++)
-        {
-            Obstacle obstacle = (Obstacle) obstacles.get(i);
-            Vector2 repulsion = fleeInSight(obstacle.getPosition());
-            repulsion.scl(obstacle.getRepulsionForce());
-            fleeForce.add(repulsion);
-        }
-        applyForce(fleeForce);
+        applyForce(obstForce);
     }
 
     public Vector2 fleeInSight(Vector2 target)

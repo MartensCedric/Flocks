@@ -25,6 +25,6 @@ public class Wall extends Obstacle {
     @Override
     public void initObstacle() {
         radius = 25;
-        repulsionForce = 5;
+        repulsionForce = 2;
     }
 }

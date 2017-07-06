@@ -1,20 +1,19 @@
 package com.cedricmartens.flocks.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.cedricmartens.flocks.Agent;
-import com.cedricmartens.flocks.Boid;
-import com.cedricmartens.flocks.Const;
-import sun.security.provider.SHA;
+import com.cedricmartens.flocks.agents.Agent;
+import com.cedricmartens.flocks.agents.Circloid;
+import com.cedricmartens.flocks.agents.Triboid;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
 
 /**
  * Created by martens on 7/5/17.
@@ -23,20 +22,18 @@ public class PlayScreen extends StageScreen{
 
     private List<Agent> agents;
     private ShapeRenderer shapeRenderer;
+    private GestureDetector gestureDetector;
 
     public PlayScreen()
     {
         shapeRenderer = new ShapeRenderer();
         shapeRenderer.setAutoShapeType(true);
         agents = new ArrayList<Agent>();
-        for(int i = 0; i < 50; i++)
-        {
-            agents.add(new Boid());
-        }
     }
 
     @Override
-    public void render(float delta) {
+    public void render(float delta)
+    {
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -45,6 +42,16 @@ public class PlayScreen extends StageScreen{
                 new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0),
                 viewport.getScreenX(), viewport.getScreenY(),
                 viewport.getScreenWidth(), viewport.getScreenHeight());
+
+        if(Gdx.input.isButtonPressed(Input.Buttons.LEFT))
+        {
+            agents.add(new Circloid(new Vector2(target.x, target.y)));
+        }
+
+        if(Gdx.input.isButtonPressed(Input.Buttons.RIGHT))
+        {
+            agents.add(new Triboid(new Vector2(target.x, target.y)));
+        }
 
         for(int i = 0; i < agents.size(); i++)
         {
@@ -58,8 +65,6 @@ public class PlayScreen extends StageScreen{
 
             agent.update();
         }
-
-
 
         shapeRenderer.begin();
 
@@ -91,5 +96,9 @@ public class PlayScreen extends StageScreen{
     @Override
     public void dispose() {
 
+    }
+
+    public List<Agent> getAgents() {
+        return agents;
     }
 }

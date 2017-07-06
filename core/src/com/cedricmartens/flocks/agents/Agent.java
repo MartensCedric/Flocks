@@ -1,7 +1,9 @@
-package com.cedricmartens.flocks;
+package com.cedricmartens.flocks.agents;
 
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.cedricmartens.flocks.Const;
+import com.cedricmartens.flocks.MathUtils;
 
 import java.util.List;
 import java.util.Random;
@@ -22,23 +24,20 @@ public abstract class Agent
     protected float sightDegrees;
 
 
+    public Agent(Vector2 position) {
+        this.position = position;
+        initAgent();
+    }
+
     public Agent()
     {
         Random random = new Random();
-
         position = new Vector2();
         position.set(random.nextInt(Const.WIDTH), random.nextInt(Const.HEIGHT));
-
-        velocity = new Vector2();
-        velocity.setToRandomDirection();
-
-        maxSpeed = 5f;
-        maxForce = 0.2f;
-        sightDistance = 50f;
-        sightDegrees = (float) Math.toDegrees(Math.PI/2);
-
-        acceleration = new Vector2();
+        initAgent();
     }
+
+    protected abstract void initAgent();
 
     public Vector2 seek(Vector2 target)
     {
@@ -91,11 +90,14 @@ public abstract class Agent
 
         for(Agent other : agents)
         {
-            float d = position.dst(other.position);
-            if(d > 0 && d < sightDistance/2)
+            if(this.getClass() == other.getClass())
             {
-                sum.add(other.velocity);
-                count++;
+                float d = position.dst(other.position);
+                if(d > 0 && d < sightDistance/2)
+                {
+                    sum.add(other.velocity);
+                    count++;
+                }
             }
         }
 

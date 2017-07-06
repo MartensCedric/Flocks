@@ -1,5 +1,6 @@
 package com.cedricmartens.flocks.agent;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.cedricmartens.flocks.Const;
@@ -24,6 +25,7 @@ public abstract class Agent extends Entity
     protected float sightDistance;
     protected float sightDegrees;
 
+    protected boolean drawSight = true;
 
     public Agent(Vector2 position) {
         setPosition(position);
@@ -159,14 +161,15 @@ public abstract class Agent extends Entity
         applyForce(separateForce);
         applyForce(seekForce);
 
+        Vector2 fleeForce = new Vector2();
         for(int i = 0; i < obstacles.size(); i++)
         {
             Obstacle obstacle = (Obstacle) obstacles.get(i);
-            Vector2 fleeForce = fleeInSight(obstacle.getPosition());
-            fleeForce.scl(obstacle.getRepulsionForce());
-
-            applyForce(fleeForce);
+            Vector2 repulsion = fleeInSight(obstacle.getPosition());
+            repulsion.scl(obstacle.getRepulsionForce());
+            fleeForce.add(repulsion);
         }
+        applyForce(fleeForce);
     }
 
     public Vector2 fleeInSight(Vector2 target)
@@ -207,4 +210,10 @@ public abstract class Agent extends Entity
     }
 
     public abstract void render(ShapeRenderer shapeRenderer);
+
+    protected void renderSight(ShapeRenderer shapeRenderer)
+    {
+        shapeRenderer.setColor(Color.BLACK);
+        shapeRenderer.circle(getPosition().x, getPosition().y, sightDistance);
+    }
 }

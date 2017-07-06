@@ -39,5 +39,6 @@ public class Squarel extends Agent {
                 getPosition().x + getVelocity().x * 5,
                 getPosition().y + getVelocity().y * 5);
 
+        renderSight(renderer);
     }
 }

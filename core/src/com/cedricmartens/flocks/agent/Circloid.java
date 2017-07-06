@@ -18,13 +18,7 @@ public class Circloid extends Agent {
                 getPosition().x + getVelocity().x * 5,
                 getPosition().y + getVelocity().y * 5);
 
-
-        renderer.setColor(Color.BLUE);
-        //renderer.circle(getPosition().x, getPosition().y, sightDistance);
-
-        renderer.setColor(Color.RED);
-        //renderer.arc(getPosition().x, getPosition().y, sightDistance,
-          //      getVelocity().angle() - sightDegrees/2, sightDegrees);
+        renderSight(renderer);
     }
 
     public Circloid(Vector2 position) {

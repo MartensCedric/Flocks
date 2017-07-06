@@ -3,6 +3,7 @@ package com.cedricmartens.flocks.agent;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.cedricmartens.flocks.Const;
 
 /**
  * Created by martens on 7/6/17.
@@ -32,6 +33,8 @@ public class Triboid extends Agent{
 
         shapeRenderer.line(vecPerp1.x, vecPerp1.y, vDir.x, vDir.y);
         shapeRenderer.line(vecPerp2.x, vecPerp2.y, vDir.x, vDir.y);
+
+        renderSight(shapeRenderer);
     }
 
     public Triboid(Vector2 position) {

@@ -1,18 +1,18 @@
 package com.cedricmartens.flocks.screens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.cedricmartens.flocks.agents.Agent;
-import com.cedricmartens.flocks.agents.Circloid;
-import com.cedricmartens.flocks.agents.Triboid;
+import com.cedricmartens.flocks.Entity;
+import com.cedricmartens.flocks.agent.Agent;
+import com.cedricmartens.flocks.obstacle.Obstacle;
+import com.cedricmartens.flocks.spawn.AgentSpawner;
+import com.cedricmartens.flocks.spawn.ObstacleSpawner;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,16 +22,18 @@ import java.util.List;
  */
 public class PlayScreen extends StageScreen{
 
-    private List<Agent> agents;
     private ShapeRenderer shapeRenderer;
     private GestureDetector detector;
     private PlayScreenGesture behavior;
+    private ObstacleSpawner obstacleSpawner;
+    private AgentSpawner agentSpawner;
 
     public PlayScreen()
     {
         shapeRenderer = new ShapeRenderer();
         shapeRenderer.setAutoShapeType(true);
-        agents = new ArrayList<Agent>();
+        agentSpawner = new AgentSpawner();
+        obstacleSpawner = new ObstacleSpawner();
 
         setMultiplexer();
     }
@@ -58,25 +60,16 @@ public class PlayScreen extends StageScreen{
                 viewport.getScreenX(), viewport.getScreenY(),
                 viewport.getScreenWidth(), viewport.getScreenHeight());
 
-        if(Gdx.input.isButtonPressed(Input.Buttons.LEFT))
+        List<Entity> agents = agentSpawner.getEntities();
+        for(int i = 0; i < agents.size(); i++)
         {
-         //   agents.add(new Circloid(new Vector2(target.x, target.y)));
-        }
-
-        if(Gdx.input.isButtonPressed(Input.Buttons.RIGHT))
-        {
-            //agents.add(new Triboid(new Vector2(target.x, target.y)));
+            Agent agent = (Agent) agents.get(i);
+            agent.applyBehaviours(new Vector2(target.x, target.y), agents, obstacleSpawner.getEntities());
         }
 
         for(int i = 0; i < agents.size(); i++)
         {
-            Agent agent = agents.get(i);
-            agent.applyBehaviours(new Vector2(target.x, target.y), agents);
-        }
-
-        for(int i = 0; i < agents.size(); i++)
-        {
-            Agent agent = agents.get(i);
+            Agent agent = (Agent) agents.get(i);
 
             agent.update();
         }
@@ -84,11 +77,20 @@ public class PlayScreen extends StageScreen{
         shapeRenderer.begin();
 
         shapeRenderer.setProjectionMatrix(getCamera().combined);
-        for(int i = 0; i < agents.size(); i++)
-            agents.get(i).render(shapeRenderer);
 
-        shapeRenderer.setColor(Color.BLACK);
-        shapeRenderer.circle( 0,  0, 25);
+        for(int i = 0; i < agents.size(); i++)
+        {
+            Agent agent = (Agent) agents.get(i);
+            agent.render(shapeRenderer);
+        }
+
+        List<Entity> obstacles = obstacleSpawner.getEntities();
+        for(int i = 0; i < obstacles.size(); i++)
+        {
+            Obstacle obstacle = (Obstacle) obstacles.get(i);
+            obstacle.render(shapeRenderer);
+        }
+
         shapeRenderer.end();
 
         super.render(delta);
@@ -119,7 +121,11 @@ public class PlayScreen extends StageScreen{
         setMultiplexer();
     }
 
-    public List<Agent> getAgents() {
-        return agents;
+    public ObstacleSpawner getObstacleSpawner() {
+        return obstacleSpawner;
+    }
+
+    public AgentSpawner getAgentSpawner() {
+        return agentSpawner;
     }
 }

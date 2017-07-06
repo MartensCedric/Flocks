@@ -1,17 +1,14 @@
-package com.cedricmartens.flocks.obstacles;
+package com.cedricmartens.flocks;
 
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 
 /**
  * Created by martens on 7/6/17.
  */
 
-public abstract class Obstacle
+public abstract class Entity
 {
     private Vector2 position;
-
-    public abstract void render(ShapeRenderer shapeRenderer);
 
     public Vector2 getPosition() {
         return position;

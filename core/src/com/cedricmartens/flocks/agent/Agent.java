@@ -1,9 +1,11 @@
-package com.cedricmartens.flocks.agents;
+package com.cedricmartens.flocks.agent;
 
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.cedricmartens.flocks.Const;
+import com.cedricmartens.flocks.Entity;
 import com.cedricmartens.flocks.MathUtils;
+import com.cedricmartens.flocks.obstacle.Obstacle;
 
 import java.util.List;
 import java.util.Random;
@@ -11,9 +13,8 @@ import java.util.Random;
 /**
  * Created by martens on 7/5/17.
  */
-public abstract class Agent
+public abstract class Agent extends Entity
 {
-    private Vector2 position;
     private Vector2 velocity;
     private Vector2 acceleration;
 
@@ -25,15 +26,15 @@ public abstract class Agent
 
 
     public Agent(Vector2 position) {
-        this.position = position;
+        setPosition(position);
         initAgent();
     }
 
     public Agent()
     {
         Random random = new Random();
-        position = new Vector2();
-        position.set(random.nextInt(Const.WIDTH), random.nextInt(Const.HEIGHT));
+        setPosition(new Vector2());
+        getPosition().set(random.nextInt(Const.WIDTH), random.nextInt(Const.HEIGHT));
         initAgent();
     }
 
@@ -41,7 +42,7 @@ public abstract class Agent
 
     public Vector2 seek(Vector2 target)
     {
-        Vector2 desired = new Vector2(target).sub(position);
+        Vector2 desired = new Vector2(target).sub(getPosition());
 
         desired.nor();
         desired.scl(maxSpeed);
@@ -54,7 +55,7 @@ public abstract class Agent
 
     public Vector2 flee(Vector2 target)
     {
-        Vector2 desired = new Vector2(target).add(position);
+        Vector2 desired = new Vector2(target).add(getPosition());
 
         desired.nor();
         desired.scl(maxSpeed);
@@ -67,7 +68,7 @@ public abstract class Agent
 
     public Vector2 arrive(Vector2 target)
     {
-        Vector2 desired = new Vector2(target).sub(position);
+        Vector2 desired = new Vector2(target).sub(getPosition());
         float d = desired.len();
 
         if(d < sightDistance)
@@ -92,7 +93,7 @@ public abstract class Agent
         {
             if(this.getClass() == other.getClass())
             {
-                float d = position.dst(other.position);
+                float d = getPosition().dst(other.getPosition());
                 if(d > 0 && d < sightDistance/2)
                 {
                     sum.add(other.velocity);
@@ -112,17 +113,17 @@ public abstract class Agent
         return Vector2.Zero;
     }
 
-    public Vector2 separate (List<Agent> agents) {
+    public Vector2 separate (List<Entity> agents) {
 
         Vector2 sum = new Vector2(0, 0);
         int count = 0;
 
-        for (Agent other : agents) {
-            float d = position.dst(other.position);
+        for (Entity other : agents) {
+            float d = getPosition().dst(other.getPosition());
 
             if (d > 0 && d < sightDistance) {
 
-                Vector2 diff = new Vector2(position).sub(other.position);
+                Vector2 diff = new Vector2(getPosition()).sub(other.getPosition());
                 diff.nor();
                 diff.scl(1/d);
                 sum.add(diff);
@@ -147,24 +148,30 @@ public abstract class Agent
         acceleration.add(force);
     }
 
-    public void applyBehaviours(Vector2 target, List<Agent> agents)
+    public void applyBehaviours(Vector2 target, List<Entity> agents, List<Entity> obstacles)
     {
         Vector2 separateForce = separate(agents);
         Vector2 seekForce = seek(target);
-        Vector2 fleeForce = fleeInSight(new Vector2(0, 0));
 
         separateForce.scl(2);
         seekForce.scl(1);
-        fleeForce.scl(5);
 
         applyForce(separateForce);
         applyForce(seekForce);
-        applyForce(fleeForce);
+
+        for(int i = 0; i < obstacles.size(); i++)
+        {
+            Obstacle obstacle = (Obstacle) obstacles.get(i);
+            Vector2 fleeForce = fleeInSight(obstacle.getPosition());
+            fleeForce.scl(obstacle.getRepulsionForce());
+
+            applyForce(fleeForce);
+        }
     }
 
     public Vector2 fleeInSight(Vector2 target)
     {
-        float d = target.dst(position);
+        float d = target.dst(getPosition());
         if(d < sightDistance)
         {
             return flee(target);
@@ -178,17 +185,9 @@ public abstract class Agent
         velocity.add(acceleration);
         velocity.limit(maxSpeed);
 
-        position.add(velocity);
+        getPosition().add(velocity);
 
         acceleration.setLength(0);
-    }
-
-    public Vector2 getPosition() {
-        return position;
-    }
-
-    public void setPosition(Vector2 position) {
-        this.position = position;
     }
 
     public Vector2 getVelocity() {

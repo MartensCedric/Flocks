@@ -1,18 +1,14 @@
 package com.cedricmartens.flocks.screens;
 
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.cedricmartens.flocks.AgentSpawner;
-import com.cedricmartens.flocks.agents.Agent;
-import com.cedricmartens.flocks.agents.Circloid;
-import com.cedricmartens.flocks.agents.Squarel;
-import com.cedricmartens.flocks.agents.Triboid;
-
-import java.util.Random;
+import com.cedricmartens.flocks.spawn.AgentSpawner;
+import com.cedricmartens.flocks.spawn.ObstacleSpawner;
 
 /**
  * Created by martens on 7/6/17.
@@ -23,15 +19,15 @@ public class PlayScreenGesture implements GestureDetector.GestureListener {
     private PlayScreen playScreen;
     private OrthographicCamera camera;
     private Stage stage;
-    private AgentSpawner spawner;
-    private Class<? extends Agent> currentSpawn;
+    private AgentSpawner agentSpawner;
+    private ObstacleSpawner obstacleSpawner;
 
     public PlayScreenGesture(PlayScreen playScreen) {
         this.playScreen = playScreen;
-        this.spawner = new AgentSpawner(playScreen.getAgents());
+        this.agentSpawner = playScreen.getAgentSpawner();
+        this.obstacleSpawner = playScreen.getObstacleSpawner();
         this.camera = playScreen.getCamera();
         this.stage = playScreen.getStage();
-        currentSpawn = Circloid.class;
     }
 
     @Override
@@ -45,26 +41,11 @@ public class PlayScreenGesture implements GestureDetector.GestureListener {
 
         Vector2 wc = toWorldCoords(x, y);
 
-        Random random = new Random();
+        if(button == Input.Buttons.LEFT)
+            agentSpawner.spawnAt(wc.x, wc.y);
+        else if (button == Input.Buttons.RIGHT)
+            obstacleSpawner.spawnAt(wc.x, wc.y);
 
-        int index = random.nextInt(3);
-
-        switch (index)
-        {
-            case 0 :
-                currentSpawn = Circloid.class;
-                break;
-            case 1 :
-                currentSpawn = Triboid.class;
-                break;
-            case 2 :
-                currentSpawn = Squarel.class;
-                break;
-            case 3 :
-                throw new RuntimeException();
-        }
-
-        spawner.spawnAgent(wc.x, wc.y, currentSpawn);
         return true;
     }
 

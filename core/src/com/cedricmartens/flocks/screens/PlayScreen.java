@@ -9,9 +9,11 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.cedricmartens.flocks.Entity;
+import com.cedricmartens.flocks.Food;
 import com.cedricmartens.flocks.agent.Agent;
 import com.cedricmartens.flocks.obstacle.Obstacle;
 import com.cedricmartens.flocks.spawn.AgentSpawner;
+import com.cedricmartens.flocks.spawn.FoodSpawner;
 import com.cedricmartens.flocks.spawn.ObstacleSpawner;
 
 import java.util.ArrayList;
@@ -27,6 +29,7 @@ public class PlayScreen extends StageScreen{
     private PlayScreenGesture behavior;
     private ObstacleSpawner obstacleSpawner;
     private AgentSpawner agentSpawner;
+    private FoodSpawner foodSpawner;
 
     public PlayScreen()
     {
@@ -34,6 +37,7 @@ public class PlayScreen extends StageScreen{
         shapeRenderer.setAutoShapeType(true);
         agentSpawner = new AgentSpawner();
         obstacleSpawner = new ObstacleSpawner();
+        foodSpawner = new FoodSpawner();
 
         setMultiplexer();
     }
@@ -54,17 +58,11 @@ public class PlayScreen extends StageScreen{
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        Viewport viewport = getStage().getViewport();
-        Vector3 target = getCamera().unproject(
-                new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0),
-                viewport.getScreenX(), viewport.getScreenY(),
-                viewport.getScreenWidth(), viewport.getScreenHeight());
-
         List<Entity> agents = agentSpawner.getEntities();
         for(int i = 0; i < agents.size(); i++)
         {
             Agent agent = (Agent) agents.get(i);
-            agent.applyBehaviours(new Vector2(target.x, target.y), agents, obstacleSpawner.getEntities());
+            agent.applyBehaviours(foodSpawner.getEntities(), agentSpawner.getEntities(), obstacleSpawner.getEntities());
         }
 
         for(int i = 0; i < agents.size(); i++)
@@ -77,6 +75,13 @@ public class PlayScreen extends StageScreen{
         shapeRenderer.begin();
 
         shapeRenderer.setProjectionMatrix(getCamera().combined);
+
+        List<Entity> foods = foodSpawner.getEntities();
+        for(int i = 0; i < foods.size(); i++)
+        {
+            Food f = (Food) foods.get(i);
+            f.render(shapeRenderer);
+        }
 
         for(int i = 0; i < agents.size(); i++)
         {
@@ -127,5 +132,9 @@ public class PlayScreen extends StageScreen{
 
     public AgentSpawner getAgentSpawner() {
         return agentSpawner;
+    }
+
+    public FoodSpawner getFoodSpawner() {
+        return foodSpawner;
     }
 }

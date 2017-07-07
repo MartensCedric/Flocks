@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.cedricmartens.flocks.spawn.AgentSpawner;
+import com.cedricmartens.flocks.spawn.FoodSpawner;
 import com.cedricmartens.flocks.spawn.ObstacleSpawner;
 
 /**
@@ -21,6 +22,7 @@ public class PlayScreenGesture implements GestureDetector.GestureListener {
     private Stage stage;
     private AgentSpawner agentSpawner;
     private ObstacleSpawner obstacleSpawner;
+    private FoodSpawner foodSpawner;
 
     public PlayScreenGesture(PlayScreen playScreen) {
         this.playScreen = playScreen;
@@ -28,6 +30,7 @@ public class PlayScreenGesture implements GestureDetector.GestureListener {
         this.obstacleSpawner = playScreen.getObstacleSpawner();
         this.camera = playScreen.getCamera();
         this.stage = playScreen.getStage();
+        this.foodSpawner = playScreen.getFoodSpawner();
     }
 
     @Override
@@ -44,7 +47,7 @@ public class PlayScreenGesture implements GestureDetector.GestureListener {
         if(button == Input.Buttons.LEFT)
             agentSpawner.spawnAt(wc.x, wc.y);
         else if (button == Input.Buttons.RIGHT)
-            obstacleSpawner.spawnAt(wc.x, wc.y);
+            foodSpawner.spawnAt(wc.x, wc.y);
 
         return true;
     }

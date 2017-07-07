@@ -17,7 +17,7 @@ public abstract class Obstacle extends Entity
     public abstract void initObstacle();
 
     public Obstacle(Vector2 position) {
-        setPosition(position);
+        super(position);
         initObstacle();
     }
 

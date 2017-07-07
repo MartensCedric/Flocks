@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.cedricmartens.flocks.Const;
 import com.cedricmartens.flocks.Entity;
+import com.cedricmartens.flocks.Food;
 import com.cedricmartens.flocks.MathUtils;
 import com.cedricmartens.flocks.obstacle.Obstacle;
 
@@ -28,14 +29,14 @@ public abstract class Agent extends Entity
     protected boolean drawSight = false;
 
     public Agent(Vector2 position) {
-        setPosition(position);
+        super(position);
         initAgent();
     }
 
     public Agent()
     {
+        super(new Vector2());
         Random random = new Random();
-        setPosition(new Vector2());
         getPosition().set(random.nextInt(Const.WIDTH), random.nextInt(Const.HEIGHT));
         initAgent();
     }
@@ -156,13 +157,39 @@ public abstract class Agent extends Entity
         Vector2 seekForce = seek(target);
         Vector2 obstForce = separate(obstacles);
 
-        separateForce.scl(2);
+        separateForce.scl(1.8f);
         seekForce.scl(1);
-        obstForce.scl(3);
+        obstForce.scl(8);
 
         applyForce(separateForce);
         applyForce(seekForce);
         applyForce(obstForce);
+    }
+
+    public void applyBehaviours(List<Entity> foods, List<Entity> agents, List<Entity> obstacles)
+    {
+        Vector2 target = new Vector2();
+
+        if(!foods.isEmpty())
+        {
+            Food bestFood = null;
+            float bestDis = Float.MAX_VALUE;
+            for(int i = 0; i < foods.size(); i++)
+            {
+                Food f = (Food) foods.get(i);
+                float d = f.getPosition().dst(getPosition());
+                if(d < bestDis)
+                {
+                    bestDis = d;
+                    bestFood = f;
+                }
+            }
+
+            target.set(bestFood.getPosition());
+        }
+
+
+        applyBehaviours(target, agents, obstacles);
     }
 
     public Vector2 fleeInSight(Vector2 target)

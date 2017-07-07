@@ -10,6 +10,10 @@ public abstract class Entity
 {
     private Vector2 position;
 
+    public Entity(Vector2 position) {
+        this.position = position;
+    }
+
     public Vector2 getPosition() {
         return position;
     }
